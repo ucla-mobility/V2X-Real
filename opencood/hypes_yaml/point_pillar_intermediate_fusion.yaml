@@ -1,0 +1,129 @@
+name: point_pillar_intermediate_fusion
+root_dir: "/data/v2xreal/train"
+validate_dir: "/data/v2xreal/test"
+dataset_mode: 'vc'
+
+yaml_parser: "load_point_pillar_params"
+train_params:
+  batch_size: &batch_size 2
+  epoches: 100
+  eval_freq: 1
+  save_freq: 1
+
+fusion:
+  core_method: 'IntermediateFusionDataset' # LateFusionDataset, EarlyFusionDataset, IntermediateFusionDataset supported
+  args: []
+
+# preprocess-related
+preprocess:
+  # options: BasePreprocessor, VoxelPreprocessor, BevPreprocessor
+  core_method: 'SpVoxelPreprocessor'
+  args:
+    voxel_size: &voxel_size [0.4, 0.4, 30]
+    max_points_per_voxel: 32
+    max_voxel_train: 64000
+    max_voxel_test: 640000
+  # lidar range for each individual cav.
+  cav_lidar_range: &cav_lidar [ -102.4, -40, -15, 102.4, 40, 15 ]
+  num_class: &num_class 3
+  anchor_generator_config: &anchor_generator_config
+    - 'class_name': 'vehicle'
+      'anchor_sizes': [ [ 3.9, 1.6, 1.56 ] ]
+      'anchor_rotations': [ 0, 1.57 ]
+      'anchor_bottom_heights': [ -1.78 ]
+      'align_center': True
+      'feature_map_stride': 2
+      'matched_threshold': 0.6
+      'unmatched_threshold': 0.45
+    - 'class_name': 'pedestrian'
+      'anchor_sizes': [ [ 0.8, 0.6, 1.73 ] ]
+      'anchor_rotations': [ 0, 1.57 ]
+      'anchor_bottom_heights': [ -0.6 ]
+      'align_center': True
+      'feature_map_stride': 2
+      'matched_threshold': 0.5
+      'unmatched_threshold': 0.35
+    - 'class_name': 'truck'
+      'anchor_sizes': [ [ 8, 3, 3 ] ]
+      'anchor_rotations': [ 0, 1.57 ]
+      'anchor_bottom_heights': [ -1.78 ]
+      'align_center': True
+      'feature_map_stride': 2
+      'matched_threshold': 0.6
+      'unmatched_threshold': 0.45
+
+data_augment:
+  - NAME: random_world_flip
+    ALONG_AXIS_LIST: [ 'x' ]
+
+  - NAME: random_world_rotation
+    WORLD_ROT_ANGLE: [ -0.78539816, 0.78539816 ]
+
+  - NAME: random_world_scaling
+    WORLD_SCALE_RANGE: [ 0.95, 1.05 ]
+
+# anchor box related
+postprocess:
+  core_method: 'VoxelPostprocessor' # VoxelPostprocessor, BevPostprocessor supported
+  anchor_args:
+    cav_lidar_range: *cav_lidar
+    num: &achor_num 2
+    anchor_generator_config: *anchor_generator_config
+  target_args:
+    score_threshold: 0.20
+  order: 'hwl' # hwl or lwh
+  max_num: 300 # maximum number of objects in a single frame. use this number to make sure different frames has the same dimension in the same batch
+  nms_thresh: 0.15
+
+# model related
+model:
+  core_method: point_pillar_intermediate
+  args:
+    voxel_size: *voxel_size
+    lidar_range: *cav_lidar
+    anchor_number: *achor_num
+    num_class: *num_class
+    compression: 0
+
+    pillar_vfe:
+      use_norm: true
+      with_distance: false
+      use_absolute_xyz: true
+      num_filters: [64]
+    point_pillar_scatter:
+      num_features: 64
+
+    base_bev_backbone:
+      layer_nums: [3, 5, 8]
+      layer_strides: [2, 2, 2]
+      num_filters: [64, 128, 256]
+      upsample_strides: [1, 2, 4]
+      num_upsample_filter: [128, 128, 128]
+    shrink_header:
+      kernal_size: [ 3 ]
+      stride: [ 1 ]
+      padding: [ 1 ]
+      dim: [ 256 ]
+      input_dim: 384 # 128 * 3
+
+    anchor_num: *achor_num
+
+loss:
+  core_method: point_pillar_loss
+  args:
+    cls_weight: 1.0
+    reg: 2.0
+    num_class: *num_class
+
+optimizer:
+  core_method: Adam
+  lr: 0.002
+  args:
+    eps: 1e-10
+    weight_decay: 1e-4
+
+lr_scheduler:
+  core_method: multistep #step, multistep and Exponential support
+  gamma: 0.1
+  step_size: [10, 15]
+
