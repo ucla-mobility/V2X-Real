@@ -1,5 +1,5 @@
 # V2X-Real
-[ECCV 2024] The official codebase for the paper "V2X-Real: a Largs-Scale Dataset for Vehicle-to-Everything Cooperative Perception"
+[ECCV 2024] The official codebase for the paper "V2X-Real: a Large-Scale Dataset for Vehicle-to-Everything Cooperative Perception"
 [![website](https://img.shields.io/badge/Website-Explore%20Now-blueviolet?style=flat&logo=google-chrome)](https://research.seas.ucla.edu/mobility-lab/v2x-real/)
 [![paper](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2403.16034)
 [![supplement](https://img.shields.io/badge/Supplementary-Material-red)](https://arxiv.org/abs/2403.16034)
