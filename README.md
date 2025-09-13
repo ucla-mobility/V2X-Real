@@ -15,6 +15,8 @@ Supported by the [UCLA Mobility Lab](https://mobility-lab.seas.ucla.edu/).
 <img src="images/dataset.png" width="600" alt="" class="img-responsive">
 </p>
 
+## News
+- **`2025/09`**: For a more well-maintained codebase, please refer to [QuantV2X](https://github.com/ucla-mobility/QuantV2X) where we have integrated [HEAL](https://github.com/yifanlu0227/HEAL) with V2X-Real dataset. We will answer the potential issues in QuantV2X repository as well.
 
 ## Overview
 - [Codebase Features](#codebase-features)
@@ -101,5 +103,12 @@ are studied.
   author={Xiang, Hao and Zheng, Zhaoliang and Xia, Xin and Xu, Runsheng and Gao, Letian and Zhou, Zewei and Han, Xu and Ji, Xinkai and Li, Mingxi and Meng, Zonglin and others},
   journal={arXiv preprint arXiv:2403.16034},
   year={2024}
+}
+
+@article{zhao2025quantv2x,
+ title={QuantV2X: A Fully Quantized Multi-Agent System for Cooperative Perception},
+ author={Zhao, Seth Z and Zhang, Huizhi and Li, Zhaowei and Peng, Juntong and Chui, Anthony and Zhou, Zewei and Meng, Zonglin and Xiang, Hao and Huang, Zhiyu and Wang, Fujia and others},
+ journal={arXiv preprint arXiv:2509.03704},
+ year={2025}
 }
 ```
